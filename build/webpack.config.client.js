@@ -1,47 +1,24 @@
 const path = require('path')
 const webpack = require('webpack')
+const webpackMerge = require('webpack-merge') // 用于合并webpack配置的包
+const baseConfig = require('./webpack.base')
 const HTMLPlugin = require('html-webpack-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const config = {
+const config = webpackMerge(baseConfig, {
   entry: { // 入口文件配置
     app: path.join(__dirname, '../client/app.js') // 使用path模块配置绝对路径
   },
   output: {
-    filename: '[name].[hash].js', // [name]为输入文件名,[hash]为哈希值
-    path: path.join(__dirname, '../dist'), // 文件输出路径
-    publicPath: '/public/'
-  },
-  module: {
-    rules: [
-      {
-        enforce: 'pre',
-        test: /.(js|jsx)$/,
-        loader: 'eslint-loader',
-        exclude: [
-          path.resolve(__dirname, '../node_modules')
-        ]
-      },
-      {
-        test: /.jsx$/,
-        loader: 'babel-loader'
-      },
-      {
-        test: /.js$/,
-        loader: 'babel-loader',
-        exclude: [
-          path.join(__dirname, '../node_modules') // 除掉不需要编译的文件
-        ]
-      }
-    ]
+    filename: '[name].[hash].js' // [name]为输入文件名,[hash]为哈希值
   },
   plugins: [
     new HTMLPlugin({
       template: path.join(__dirname, '../client/template.html')
     })
   ]
-}
+})
 
 if (isDev) {
   config.entry = {
